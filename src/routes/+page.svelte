@@ -1,7 +1,7 @@
 <script lang="ts">
-	let lengthInInches = $state(1); // Adjust length of the ruler to 1 inch
-	let ticksPerInch = $state(32); // Number of subdivisions per inch
-	let measurement = $state(0); // User-inputted measurement
+	let lengthInInches = $state(1);
+	let ticksPerInch = $state(32);
+	let measurement = $state(0);
 
 	interface TickMark {
 		position: number;
@@ -40,24 +40,52 @@
 				return numerator / denominator;
 			}
 		}
-		return parseFloat(fraction) || 0; // Return 0 if not a valid number
+		return parseFloat(fraction) || 0;
 	}
 
 	function handleMeasurementInput(event: any): void {
-		const input = event.target ? event.target.value.trim() : '';
+		const input = event.target?.value.trim() || '';
 		measurement = convertFractionToDecimal(input);
 	}
 
 	let normalizedMeasurement = $derived(measurement - Math.floor(measurement));
-
 </script>
 
 <style>
+    .container {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .input-wrapper {
+        margin-bottom: 10px;
+    }
+
+    input {
+        width: 100%;
+        padding: 8px;
+        font-size: 16px;
+        box-sizing: border-box;
+        touch-action: manipulation;
+    }
+
     .ruler {
         position: relative;
         width: 100%;
-        height: 50px;
+        height: 60px;
         background: lightgray;
+        -webkit-user-select: none;
+        user-select: none;
+        white-space: nowrap;
+        /* Hide scrollbars while maintaining scroll functionality */
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+        overflow-x: auto; /* Still allows scrolling */
+    }
+
+    .ruler::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, and Opera */
     }
 
     .tick {
@@ -65,6 +93,7 @@
         height: 10px;
         width: 1px;
         background: black;
+        transform: translateX(-50%);
     }
 
     .tick.major {
@@ -81,9 +110,10 @@
 
     .tick-label {
         position: absolute;
-        font-size: 14px;
+        font-size: clamp(10px, 2.5vw, 14px);
         transform: translateX(-50%);
-        top: 30px;
+        top: 32px;
+        white-space: nowrap;
     }
 
     .marker {
@@ -92,17 +122,57 @@
         width: 2px;
         background-color: red;
         z-index: 100;
+        transform: translateX(-50%);
+        touch-action: none;
+    }
+
+    @media (max-width: 480px) {
+        .ruler {
+            height: 50px;
+        }
+
+        .tick.major {
+            height: 25px;
+        }
+
+        .tick.medium {
+            height: 15px;
+        }
+
+        .tick.small {
+            height: 10px;
+        }
+
+        .marker {
+            height: 35px;
+            width: 3px;
+        }
     }
 </style>
 
-
-<input type="text" oninput={handleMeasurementInput} placeholder="Enter measurement in inches (e.g., 1/2, 0.5)">
-<div class="ruler">
-	{#each generateTicks() as tick}
-		<div class="tick {tick.major ? 'major' : tick.medium ? 'medium' : tick.small ? 'small' : ''}"
-				 style="left: {tick.position / lengthInInches * 100}%;">
-			<span class="tick-label">{tick.label}</span>
-		</div>
-	{/each}
-	<div class="marker" style="left: {normalizedMeasurement / lengthInInches * 100}%"></div>
+<div class="container">
+	<div class="input-wrapper">
+		<input
+			type="number"
+			step="0.1"
+			on:input={handleMeasurementInput}
+			placeholder="Enter measurement (e.g., 0.5)"
+		>
+	</div>
+	<div class="ruler">
+		{#each generateTicks() as tick}
+			<div
+				class="tick {tick.major ? 'major' : tick.medium ? 'medium' : tick.small ? 'small' : ''}"
+				style="left: {tick.position / lengthInInches * 100}%;"
+			>
+				{#if tick.major || tick.medium}
+					<span class="tick-label">{tick.label}</span>
+				{/if}
+			</div>
+		{/each}
+		<div
+			class="marker"
+			style="left: {normalizedMeasurement / lengthInInches * 100}%"
+		></div>
+	</div>
 </div>
