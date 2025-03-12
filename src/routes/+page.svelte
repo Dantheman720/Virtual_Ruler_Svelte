@@ -78,7 +78,6 @@
         -webkit-user-select: none;
         user-select: none;
         white-space: nowrap;
-        /* Hide scrollbars while maintaining scroll functionality */
         -ms-overflow-style: none; /* IE and Edge */
         scrollbar-width: none; /* Firefox */
         overflow-x: auto; /* Still allows scrolling */
@@ -165,9 +164,7 @@
 				class="tick {tick.major ? 'major' : tick.medium ? 'medium' : tick.small ? 'small' : ''}"
 				style="left: {tick.position / lengthInInches * 100}%;"
 			>
-				{#if tick.major || tick.medium}
-					<span class="tick-label">{tick.label}</span>
-				{/if}
+				<span class="tick-label">{tick.label}</span>
 			</div>
 		{/each}
 		<div
