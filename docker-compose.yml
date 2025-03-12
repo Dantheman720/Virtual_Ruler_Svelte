@@ -5,7 +5,7 @@ services:
     build: .
     container_name: ruler-web-app
     ports:
-      - "5173:5173" # Map port 3000 on host to container
+      - "32141:5173" # Map port 32141 on the host to port 5173 in the container
     restart: always # Automatically restart the container if it stops
     volumes:
       - .:/app # Mount project directory for live updates
