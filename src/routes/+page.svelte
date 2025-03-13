@@ -50,15 +50,18 @@
 	}
 
 	function convertFractionToDecimal(fraction: string): number {
-		const parts = fraction.split('/');
-		if (parts.length === 2) {
-			const numerator = parseFloat(parts[0]);
-			const denominator = parseFloat(parts[1]);
-			if (!isNaN(numerator) && !isNaN(denominator) && denominator !== 0) {
-				return numerator / denominator;
+		const trimmed = fraction.trim();
+		if (trimmed.includes('/')) {
+			const parts = trimmed.split('/');
+			if (parts.length === 2) {
+				const numerator = parseFloat(parts[0]);
+				const denominator = parseFloat(parts[1]);
+				if (!isNaN(numerator) && !isNaN(denominator) && denominator !== 0) {
+					return numerator / denominator;
+				}
 			}
 		}
-		return parseFloat(fraction) || 0;
+		return parseFloat(trimmed) || 0;
 	}
 
 	function handleMeasurementInput(event: any): void {
@@ -170,10 +173,9 @@
 <div class="container">
 	<div class="input-wrapper">
 		<input
-			type="number"
-			step="0.1"
+			type="text"
 			on:input={handleMeasurementInput}
-			placeholder="Enter measurement (e.g., 0.5)"
+			placeholder="Enter measurement (e.g., 1/2 or 0.5)"
 		>
 	</div>
 	<div class="ruler">
@@ -182,7 +184,7 @@
 				class="tick {tick.major ? 'major' : tick.medium ? 'medium' : tick.small ? 'small' : ''}"
 				style="left: {tick.position / lengthInInches * 100}%;"
 			>
-					<span class="tick-label">{tick.label}</span>
+				<span class="tick-label">{tick.label}</span>
 			</div>
 		{/each}
 		<div
