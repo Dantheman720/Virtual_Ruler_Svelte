@@ -2,9 +2,11 @@
 	import { onMount } from 'svelte';
 
 	let lengthInInches = $state(1);
-	let ticksPerInch = $state(32);
 	let measurement = $state(0);
 	let screenWidth = $state(0);
+
+	// Dynamically set ticksPerInch based on screenWidth
+	let ticksPerInch = $derived(screenWidth < 820 ? 16 : 32);
 
 	interface TickMark {
 		position: number;
@@ -180,9 +182,7 @@
 				class="tick {tick.major ? 'major' : tick.medium ? 'medium' : tick.small ? 'small' : ''}"
 				style="left: {tick.position / lengthInInches * 100}%;"
 			>
-				{#if screenWidth >= 820 || i % 16 === 0}
 					<span class="tick-label">{tick.label}</span>
-				{/if}
 			</div>
 		{/each}
 		<div
