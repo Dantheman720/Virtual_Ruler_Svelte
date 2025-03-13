@@ -1,7 +1,10 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+
 	let lengthInInches = $state(1);
 	let ticksPerInch = $state(32);
 	let measurement = $state(0);
+	let screenWidth = $state(0);
 
 	interface TickMark {
 		position: number;
@@ -10,6 +13,19 @@
 		small: boolean;
 		label: string;
 	}
+
+	// Track screen width
+	onMount(() => {
+		screenWidth = window.innerWidth;
+		window.addEventListener('resize', () => {
+			screenWidth = window.innerWidth;
+		});
+		return () => {
+			window.removeEventListener('resize', () => {
+				screenWidth = window.innerWidth;
+			});
+		};
+	});
 
 	function generateTicks(): TickMark[] {
 		const ticks: TickMark[] = [];
@@ -159,12 +175,14 @@
 		>
 	</div>
 	<div class="ruler">
-		{#each generateTicks() as tick}
+		{#each generateTicks() as tick, i}
 			<div
 				class="tick {tick.major ? 'major' : tick.medium ? 'medium' : tick.small ? 'small' : ''}"
 				style="left: {tick.position / lengthInInches * 100}%;"
 			>
-				<span class="tick-label">{tick.label}</span>
+				{#if screenWidth >= 820 || i % 16 === 0}
+					<span class="tick-label">{tick.label}</span>
+				{/if}
 			</div>
 		{/each}
 		<div
